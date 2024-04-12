@@ -1,5 +1,6 @@
 from sklearn.model_selection import GridSearchCV
 from sklearn.ensemble import RandomForestClassifier
+from Preprocessing import *
 
 # Create a Random Forest classifier
 rf_classifier = RandomForestClassifier()
