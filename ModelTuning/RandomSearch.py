@@ -1,0 +1,40 @@
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import mean_absolute_error
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, classification_report, ConfusionMatrixDisplay
+from sklearn.model_selection import RandomizedSearchCV
+import numpy as np
+from Preprocessing import *
+# Create the random grid
+random_grid = {
+ 'max_features': [1, 2, 4],
+ 'min_samples_split': [2, 5, 10],
+ 'n_estimators': [200, 400, 600, 800, 1000, 1200, 1400, 1600, 1800, 2000]
+ }
+
+rf = RandomForestClassifier()
+
+rf_random = RandomizedSearchCV(estimator = rf, param_distributions = random_grid,n_iter = 10, cv = 3, verbose=2, random_state=42, n_jobs = -1)
+# Fit the random search model
+rf_random.fit(X_train, y_train)
+
+
+# Make predictions on the test data
+y_pred_test = rf_random.best_estimator_.predict(X_test)
+y_pred_train = rf_random.best_estimator_.predict(X_train)
+
+# Evaluate Train Model
+accuracy_train = accuracy_score(y_train, y_pred_train)
+classification_rep_train = classification_report(y_train, y_pred_train)
+print(f'Train Accuracy: {accuracy_train:.2f}')
+print('Train Classification Report:\n', classification_rep_train)
+confusion_matrix_train = ConfusionMatrixDisplay.from_predictions(y_train, y_pred_train, display_labels=le.classes_)
+
+# Evaluate Test Model
+accuracy_test = accuracy_score(y_test, y_pred_test)
+classification_rep_test = classification_report(y_test, y_pred_test)
+print(f'Test Accuracy: {accuracy_test:.2f}')
+print('Test Classification Report:\n', classification_rep_test)
+confusion_matrix_test = ConfusionMatrixDisplay.from_predictions(y_test, y_pred_test, display_labels=le.classes_)
+
+rf_random.best_params_
